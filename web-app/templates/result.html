@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Display Image</title>
+    <title>Display Image and Classification</title>
 </head>
 <body>
-    <h2>Display Image</h2>
-    <!-- Display the image -->
-    <img src="data:image/png;base64,{{ image_data }}" alt="Image from MongoDB" />
-    <!-- To Do -->
+    <h2>Display Image and Classification</h2>
+    <img src="data:image/png;base64,{{ image_data }}" alt="Classified Image" />
+    <p>Classification: {{ classification }}</p>
 </body>
 </html>
