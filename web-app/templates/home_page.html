@@ -53,6 +53,8 @@
             .then(response => response.json())
             .then(data => {
                 console.log('Success:', data);
+                // Redirect to the result page to show the classification
+                window.location.href = '/result';
             })
             .catch((error) => {
                 console.error('Error:', error);
