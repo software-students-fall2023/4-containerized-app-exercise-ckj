@@ -13,9 +13,9 @@ collection = db.images
 model = InceptionV3(weights='imagenet')
 
 # Function to classify image and return the class
-def classify_clothing(img_path):
-    # Load the image file, resizing it to 299x299 pixels (required input size for InceptionV3)
-    img = image.load_img(img_path, target_size=(299, 299))
+def classify_clothing(image_data):
+    # Convert the base64 string to a PIL image
+    img = image.load_img(io.BytesIO(base64.b64decode(image_data)), target_size=(299, 299))
     # Convert the image to a numpy array
     img_array = image.img_to_array(img)
     # Add a dimension to the image array to represent the batch size
@@ -28,12 +28,6 @@ def classify_clothing(img_path):
     decoded_predictions = decode_predictions(predictions)
 
     top_prediction = decoded_predictions[0][0]
-    # The top_prediction is a tuple like ('n02504458', 'African_elephant', 0.82658267)
     # Let's assume the second element in the tuple is the clothing type
     clothing_type = top_prediction[1]
     return clothing_type
-
-# # Example usage
-# image_path = '/Users/liwenqian/Desktop/Team/4-containerized-app-exercise-ckj/clothing-dataset-small/shirt.jpeg'
-# clothing_type = classify_clothing(image_path)
-# print(f'Clothing type: {clothing_type}')
