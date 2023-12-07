@@ -1,39 +1,39 @@
-import tensorflow as tf
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.inception_v3 import InceptionV3, preprocess_input, decode_predictions
+import io
 import numpy as np
-from pymongo import MongoClient
+from tensorflow.keras.applications.inception_v3 import InceptionV3, preprocess_input, decode_predictions
+from tensorflow.keras.preprocessing import image as keras_image
 
-# Initialize MongoDB Connection
-client = MongoClient('mongodb://localhost:27017/')
-db = client.project4
-collection = db.images
 
-# Load Pre-trained Model
+# Load the pre-trained InceptionV3 model
 model = InceptionV3(weights='imagenet')
 
-# Function to classify image and return the class
-def classify_clothing(img_path):
-    # Load the image file, resizing it to 299x299 pixels (required input size for InceptionV3)
-    img = image.load_img(img_path, target_size=(299, 299))
-    # Convert the image to a numpy array
-    img_array = image.img_to_array(img)
-    # Add a dimension to the image array to represent the batch size
-    img_array = np.expand_dims(img_array, axis=0)
-    # Preprocess the image for the model
-    img_array = preprocess_input(img_array)
-    # Predict the class of the image
-    predictions = model.predict(img_array)
-    # Decode the predictions to get human-readable labels
-    decoded_predictions = decode_predictions(predictions)
 
-    top_prediction = decoded_predictions[0][0]
-    # The top_prediction is a tuple like ('n02504458', 'African_elephant', 0.82658267)
-    # Let's assume the second element in the tuple is the clothing type
-    clothing_type = top_prediction[1]
-    return clothing_type
+def classify_clothing(image_binary):
+    """Classifies the given image using the InceptionV3 model.
 
-# # Example usage
-# image_path = '/Users/liwenqian/Desktop/Team/4-containerized-app-exercise-ckj/clothing-dataset-small/shirt.jpeg'
-# clothing_type = classify_clothing(image_path)
-# print(f'Clothing type: {clothing_type}')
+    Args:
+        image_binary (bytes): The binary data of the image.
+
+    Returns:
+        str: The predicted clothing type.
+    """
+    try:
+        # Convert binary data to a PIL Image
+        image = Image.open(io.BytesIO(image_binary))
+
+        # Resize and preprocess the image
+        image = image.resize((299, 299))
+        image_array = img_to_array(image)
+        image_array = np.expand_dims(image_array, axis=0)
+        image_array = preprocess_input(image_array)
+
+        # Classify the image using the InceptionV3 model
+        predictions = model.predict(image_array)
+        decoded_predictions = decode_predictions(predictions, top=1)
+        clothing_type = decoded_predictions[0][0][1]
+
+        return clothing_type
+    except Exception as e:
+        # Log any errors during classification
+        print(f"An error occurred during classification: {e}")
+        return "Error in classification"
