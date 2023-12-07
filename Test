@@ -1,0 +1,32 @@
+import pytest
+import coverage
+from machine_learning_client.ml_client import classify_clothing
+
+cov = coverage.Coverage()
+cov.start()
+
+
+def test_classify_clothing_with_valid_image():
+    # Load a sample image
+    image_file = open('sample_image.jpg', 'rb')
+    image_binary = image_file.read()
+    image_file.close()
+
+    # Classify the image
+    predicted_clothing_type = classify_clothing(image_binary)
+    assert predicted_clothing_type == "T-shirt"
+
+
+def test_classify_clothing_with_invalid_image():
+    # Use invalid binary data
+    image_binary = b"This is not an image"
+
+    # Classify the invalid image
+    predicted_clothing_type = classify_clothing(image_binary)
+    assert predicted_clothing_type == "Error in classification"
+
+
+cov.stop()
+cov.report()
+print("Code coverage:", cov.statements)
+assert cov.statements >= 0.8, "Code coverage should be at least 80%"

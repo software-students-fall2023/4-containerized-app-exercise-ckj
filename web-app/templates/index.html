@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Classification</title>
+</head>
+<body>
+    <h2>Upload or Capture Image for Classification</h2>
+
+    <!-- Image Upload -->
+    <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+    <button onclick="document.getElementById('imageUpload').click()">Upload Image</button>
+
+    <!-- Camera Capture -->
+    <button onclick="openCamera()">Open Camera</button>
+    <video id="cameraStream" width="640" height="480" autoplay style="display: none;"></video>
+    <button id="capture" onclick="captureImage()" style="display: none;">Capture Image</button>
+    <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+
+    <!-- Display Area -->
+    <div id="result" style="display: none;">
+        <img id="displayedImage" src="" alt="Captured Image" />
+        <p id="classificationResult"></p>
+    </div>
+
+    <script>
+        function openCamera() {
+            const video = document.getElementById('cameraStream');
+            const captureButton = document.getElementById('capture');
+            video.style.display = "block";
+            captureButton.style.display = "block";
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                    video.srcObject = stream;
+                })
+                .catch(function (error) {
+                    console.error("Error opening the camera: ", error);
+                });
+        }
+
+        function captureImage() {
+            const video = document.getElementById('cameraStream');
+            const canvas = document.getElementById('canvas');
+            const captureButton = document.getElementById('capture');
+
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');
+
+            captureButton.style.display = "none";
+            video.style.display = "none";
+
+            sendImage(imageData);
+        }
+
+        document.getElementById('imageUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                sendImage(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function sendImage(imageData) {
+            const resultContainer = document.getElementById('result');
+            const displayedImage = document.getElementById('displayedImage');
+            const classificationResult = document.getElementById('classificationResult');
+
+            displayedImage.src = imageData;
+            resultContainer.style.display = "block";
+
+            // Convert base64 image data to a blob
+            fetch(imageData)
+                .then(res => res.blob())
+                .then(blob => {
+                    // Create a new FormData instance
+                    const formData = new FormData();
+                    // Append the image blob to the FormData instance
+                    formData.append('image', blob, 'image.jpg');
+
+                    // Send the FormData with the image blob to the server
+                    fetch('/classify-image', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Display the classification result
+                        classificationResult.textContent = 'Classification: ' + data.classification;
+                    })
+                    .catch(error => {
+                        // Handle any errors that occur during the fetch
+                        console.error('Error when sending the image:', error);
+                    });
+                });
+        }
+
+    </script>
+</body>
+</html>
