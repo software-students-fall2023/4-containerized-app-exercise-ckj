@@ -1,13 +1,32 @@
 import tensorflow as tf
+from tensorflow import keras
+from keras.models import Sequential
+from keras.utils import to_categorical
+from tensorflow.keras import layers
+from keras.layers import Conv2D, Dense, Dropoout, Flatten, MaxPooling2D
+import numpy as np
+import matplotlib.pylot as plt
+from keras.datasets import ImageNet
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.inception_v3 import InceptionV3, preprocess_input, decode_predictions
-import numpy as np
 from pymongo import MongoClient
 
 # Initialize MongoDB Connection
 client = MongoClient('mongodb://localhost:27017/')
 db = client.project4
 collection = db.images
+
+
+
+#(x_train, y_train), (x_test, y_test) = ImageNet.load_data()
+
+
+
+
+
+
+
+
 
 # Load Pre-trained Model
 model = InceptionV3(weights='imagenet')

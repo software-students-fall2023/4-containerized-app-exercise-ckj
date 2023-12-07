@@ -1,6 +1,14 @@
 # Containerized App Exercise
 
-Build a containerized app that uses machine learning. See [instructions](./instructions.md) for details.
+## Team Members:
+[Jazlene Darrisaw](https://github.com/Jazlene30)
+[Chang Liu](https://github.com/cl5706)
+[Kevin Li](https://github.com/KevinLi2260)
+
+## Image Recognition:
+
+For this project, Image recognition is used through machine learning to help identify an image through photos or the users camera and return the result of what the image resembles and a picture that resembles it.
+
 ## docker setup:
 
 download mongodb image from docker hub:
@@ -26,3 +34,5 @@ docker ps-a
 ```
 python webapp.py
 ```
+
+
